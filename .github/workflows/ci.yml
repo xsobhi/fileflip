@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Test
+        run: cargo test --workspace
+      - name: Build
+        run: cargo build --release
+      - name: Package
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.+)"').Matches[0].Groups[1].Value
+          $dir = "dist/FileFlip"
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          Copy-Item target/release/fileflip.exe, target/release/fileflip_shell.dll, README.md, LICENSE $dir
+          Compress-Archive -Path "$dir/*" -DestinationPath "dist/FileFlip-$version-windows-x64.zip" -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FileFlip-windows-x64
+          path: dist/*.zip
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

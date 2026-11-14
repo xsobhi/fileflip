@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = ["crates/core", "crates/shell", "crates/app"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/xsobhi/fileflip"
+
+[workspace.dependencies]
+windows = "0.58"
+windows-core = "0.58"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+
+# Image codecs are painfully slow unoptimized; optimize dependencies even in dev builds.
+[profile.dev.package."*"]
+opt-level = 2

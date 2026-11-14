@@ -1,0 +1,8 @@
+[package]
+name = "fileflip-core"
+description = "Shared format tables, menu model and settings for FileFlip"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
