@@ -152,5 +152,5 @@ pub fn read_list(path: &Path) -> std::io::Result<Vec<PathBuf>> {
     if path.starts_with(list_dir()) {
         let _ = std::fs::remove_file(path);
     }
-    Ok(text.lines().map(str::trim).filter(|l| !l.is_empty()).map(PathBuf::from).collect())
+    Ok(text.trim_start_matches('\u{feff}').lines().map(str::trim).filter(|l| !l.is_empty()).map(PathBuf::from).collect())
 }
