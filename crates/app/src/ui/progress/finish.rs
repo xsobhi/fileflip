@@ -15,7 +15,9 @@ impl Win {
         self.last_output = items.iter().rev().find_map(|i| i.output.clone());
         let cancelled = self.progress.is_cancelled();
 
-        if (failed.is_empty() && skipped.is_empty() && self.close_when_done) || (cancelled && self.close_requested) {
+        // FILEFLIP_AUTOCLOSE: never wait for the user (automated tests).
+        let unattended = std::env::var_os("FILEFLIP_AUTOCLOSE").is_some();
+        if unattended || (failed.is_empty() && skipped.is_empty() && self.close_when_done) || (cancelled && self.close_requested) {
             close(hwnd);
             return;
         }

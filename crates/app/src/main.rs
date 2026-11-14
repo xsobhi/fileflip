@@ -127,6 +127,12 @@ pub fn convert(jobs: Vec<Job>, settings: Settings) -> i32 {
     let close_when_done = settings.close_when_done;
     Runner { jobs, settings, download_ffmpeg: download }.start(progress.clone());
     ui::progress::run(progress.clone(), close_when_done);
-    let failed = progress.snapshot().iter().any(|i| matches!(i.state, engine::progress::State::Failed(_)));
+    let mut failed = false;
+    for item in progress.snapshot() {
+        if let engine::progress::State::Failed(e) = &item.state {
+            failed = true;
+            let _ = writeln!(std::io::stderr(), "{}: {e}", item.name);
+        }
+    }
     i32::from(failed)
 }

@@ -5,36 +5,94 @@ on:
     branches: [main]
     tags: ["v*"]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
+  ffmpeg:
+    name: Slim FFmpeg (win64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: cache
+        uses: actions/cache@v4
+        with:
+          path: ffbuild/out
+          key: ffmpeg-win64-${{ hashFiles('ffmpeg/build.sh') }}
+      - name: Build
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ffbuild
+          docker run --rm -v "$PWD/ffbuild:/ffbuild" -v "$PWD/ffmpeg:/fileflip" \
+            ghcr.io/btbn/ffmpeg-builds/win64-gpl-shared-7.1:latest bash /fileflip/build.sh
+      - run: ls -la ffbuild/out && du -sh ffbuild/out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-win64
+          path: ffbuild/out
+
   build:
+    name: Build, test, package
+    needs: ffmpeg
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Test
+      - uses: actions/download-artifact@v4
+        with:
+          name: ffmpeg-win64
+          path: dist/FileFlip/ffmpeg
+
+      - name: Check FFmpeg has every encoder FileFlip uses
+        shell: pwsh
+        run: |
+          $ff = "dist/FileFlip/ffmpeg/ffmpeg.exe"
+          $enc = & $ff -hide_banner -encoders
+          foreach ($e in "libx264","libsvtav1","aac","libmp3lame","libopus","libvorbis","flac","png","mjpeg","libwebp","h264_nvenc","h264_qsv","h264_amf") {
+            if (-not ($enc -match " $e ")) { throw "missing encoder $e" }
+          }
+          & $ff -version | Select-Object -First 1
+
+      - name: Unit tests
         run: cargo test --workspace
       - name: Build
         run: cargo build --release
+
       - name: Package
         shell: pwsh
         run: |
+          Copy-Item target/release/fileflip.exe, target/release/fileflip_shell.dll, README.md, LICENSE dist/FileFlip/
+
+      - name: End-to-end conversions with the bundled FFmpeg
+        shell: pwsh
+        timeout-minutes: 10
+        run: ./installer/e2e.ps1 -App dist/FileFlip/fileflip.exe
+
+      - name: Zip and installer
+        shell: pwsh
+        run: |
           $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.+)"').Matches[0].Groups[1].Value
-          $dir = "dist/FileFlip"
-          New-Item -ItemType Directory -Force $dir | Out-Null
-          Copy-Item target/release/fileflip.exe, target/release/fileflip_shell.dll, README.md, LICENSE $dir
-          Compress-Archive -Path "$dir/*" -DestinationPath "dist/FileFlip-$version-windows-x64.zip" -Force
+          Compress-Archive -Path "dist/FileFlip/*" -DestinationPath "dist/FileFlip-$version-windows-x64.zip" -Force
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc /Q "/DVersion=$version" installer/fileflip.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
+          Get-ChildItem dist -File | Format-Table Name, Length
+
       - uses: actions/upload-artifact@v4
         with:
           name: FileFlip-windows-x64
-          path: dist/*.zip
+          path: |
+            dist/*.zip
+            dist/*.exe
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: |
+            dist/*.zip
+            dist/*.exe
           generate_release_notes: true

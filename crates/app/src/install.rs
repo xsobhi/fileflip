@@ -70,6 +70,19 @@ fn copy_over(src: &Path, dst: &Path) -> Result<(), String> {
     std::fs::copy(src, dst).map(|_| ()).map_err(|e| format!("cannot copy {}: {e}", dst.display()))
 }
 
+/// Copy a folder's files (one level, like the bundled `ffmpeg` folder). Missing source = no-op.
+fn copy_dir(src: &Path, dst: &Path) -> Result<(), String> {
+    let Ok(entries) = std::fs::read_dir(src) else { return Ok(()) };
+    std::fs::create_dir_all(dst).map_err(|e| e.to_string())?;
+    for e in entries.flatten() {
+        if e.path().is_file() {
+            copy_over(&e.path(), &dst.join(e.file_name()))?;
+        }
+    }
+    clean_old(dst);
+    Ok(())
+}
+
 /// Remove leftovers from earlier updates (old DLLs that were locked by Explorer).
 fn clean_old(dir: &Path) {
     if let Ok(rd) = std::fs::read_dir(dir) {
@@ -97,6 +110,8 @@ pub fn install() -> Result<PathBuf, String> {
         for extra in ["README.md", "LICENSE"] {
             let _ = std::fs::copy(src.join(extra), dst.join(extra));
         }
+        // FFmpeg bundled by the setup / release zip
+        copy_dir(&src.join("ffmpeg"), &dst.join("ffmpeg"))?;
     }
     register(&dst)?;
     let exe = dst.join(EXE_NAME);
