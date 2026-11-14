@@ -18,6 +18,8 @@ pub struct Preset {
     pub scale: Option<u8>,
     /// Maximum video height (e.g. 720), never upscales.
     pub height: Option<u32>,
+    /// Audio bitrate in kbit/s.
+    pub bitrate: Option<u32>,
     /// Only convert source files of this category (used for mixed selections).
     pub only: Option<Category>,
 }
@@ -37,6 +39,9 @@ impl Preset {
         }
         if let Some(h) = self.height {
             a.extend(["--height".into(), h.to_string()]);
+        }
+        if let Some(b) = self.bitrate {
+            a.extend(["--bitrate".into(), b.to_string()]);
         }
         if let Some(c) = self.only {
             a.extend(["--only".into(), c.id().to_string()]);
@@ -82,6 +87,7 @@ pub fn parse_args(args: &[String]) -> Result<Command, String> {
             "--quality" => preset.quality = Some(num(&val("--quality")?, 1, 100)? as u8),
             "--scale" => preset.scale = Some(num(&val("--scale")?, 1, 100)? as u8),
             "--height" => preset.height = Some(num(&val("--height")?, 16, 10_000)?),
+            "--bitrate" => preset.bitrate = Some(num(&val("--bitrate")?, 8, 1_000)?),
             "--only" => {
                 let v = val("--only")?;
                 preset.only = Some(Category::from_id(&v).ok_or(format!("bad category {v}"))?)

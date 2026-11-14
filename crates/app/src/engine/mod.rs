@@ -61,6 +61,7 @@ pub fn jobs_from_preset(files: &[PathBuf], preset: &Preset, settings: &Settings)
         quality: preset.quality,
         scale: preset.scale,
         height: preset.height,
+        audio_kbps: preset.bitrate,
         hw: settings.hw_accel,
         ..Default::default()
     };

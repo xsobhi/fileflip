@@ -1,8 +1,17 @@
 //! The choices offered in the Custom window's combo boxes.
 
-pub(super) const QUALITY: &[(&str, Option<u8>)] =
-    &[("Same as source", None), ("100%", Some(100)), ("90%", Some(90)), ("75%", Some(75)), ("50%", Some(50)), ("25%", Some(25))];
-pub(super) const SIZES: &[(&str, Option<u8>)] = &[("Original size", None), ("75%", Some(75)), ("50%", Some(50)), ("25%", Some(25)), ("10%", Some(10))];
+pub(super) const QUALITY: &[(&str, Option<u8>)] = &[
+    ("Same as source", None),
+    ("Best (100)", Some(100)),
+    ("High (85)", Some(85)),
+    ("Medium (70)", Some(70)),
+    ("Small file (50)", Some(50)),
+    ("Smallest (30)", Some(30)),
+];
+pub(super) const VIDEO_QUALITY: &[(&str, Option<u8>)] =
+    &[("Same as source", None), ("Full bitrate", Some(100)), ("75% bitrate", Some(75)), ("Half bitrate", Some(50)), ("Quarter bitrate", Some(25))];
+pub(super) const SIZES: &[(&str, Option<u8>)] =
+    &[("Original size", None), ("75% size", Some(75)), ("Half size", Some(50)), ("Quarter size", Some(25)), ("10% size", Some(10))];
 pub(super) const HEIGHTS: &[(&str, Option<u32>)] = &[
     ("Original", None),
     ("2160p (4K)", Some(2160)),

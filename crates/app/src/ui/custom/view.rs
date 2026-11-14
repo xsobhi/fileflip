@@ -70,7 +70,7 @@ impl Win {
                 }
                 Category::Video => {
                     label(hwnd, "Quality:", 244, r1 + 3, 50, 18);
-                    g.quality = combo(hwnd, &names(QUALITY), 0, 296, r1, 110, base + 1);
+                    g.quality = combo(hwnd, &names(VIDEO_QUALITY), 0, 296, r1, 110, base + 1);
                     label(hwnd, "Size:", 418, r1 + 3, 30, 18);
                     g.height = combo(hwnd, &names(HEIGHTS), 0, 450, r1, 96, base + 2);
                     let r2 = r1 + 30;
@@ -110,7 +110,7 @@ impl Win {
                     opts.scale = SIZES[combo_sel(g.size)].1;
                 }
                 Category::Video => {
-                    opts.quality = QUALITY[combo_sel(g.quality)].1;
+                    opts.quality = VIDEO_QUALITY[combo_sel(g.quality)].1;
                     opts.height = HEIGHTS[combo_sel(g.height)].1;
                     opts.fps = FPS[combo_sel(g.fps)].1;
                     opts.hw = combo_sel(g.encoder) == 0;

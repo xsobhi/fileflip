@@ -18,7 +18,7 @@ fn single_category_hides_own_format() {
     assert!(m.contains("JPG    [--to jpg --only image]"));
     // but PNG is still offered under More options (resize)
     assert!(m.contains("--to png --scale 50"));
-    assert!(m.contains("--to jpg --quality 25"));
+    assert!(m.contains("--to jpg --quality 50"));
 }
 
 #[test]
@@ -38,4 +38,12 @@ fn leaves_are_counted() {
     leaves(&n, &mut v);
     assert!(v.len() > 20);
     assert_eq!(v.last(), Some(&Action::Settings));
+}
+
+#[test]
+fn audio_offers_bitrates() {
+    let m = render(&build(&sel(&["a.mp3"])).unwrap());
+    assert!(m.contains("320 kbps    [--to m4a --bitrate 320 --only audio]"), "{m}");
+    assert!(m.contains("64 kbps    [--to opus --bitrate 64"), "{m}");
+    assert!(!m.contains("Quality"), "{m}");
 }

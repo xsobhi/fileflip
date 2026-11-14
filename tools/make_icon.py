@@ -115,7 +115,7 @@ def render_3d():
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     place(img, page((248, 113, 113), (185, 28, 28), (254, 202, 202)), 360, 440, 14)
     place(img, page((96, 165, 250), (30, 64, 175), (191, 219, 254)), 600, 420, -10)
-    place(img, page((255, 255, 255), (214, 222, 235), (226, 232, 240), lines=(148, 163, 184, 255)), 470, 520, 2)
+    place(img, page((255, 226, 120), (240, 165, 30), (255, 244, 200), lines=(37, 99, 235, 255)), 470, 520, 2)
     arrow(img)
     return img
 
@@ -126,9 +126,9 @@ def render_small(size):
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((300, 110, 820, 820), radius=60, fill=(37, 99, 235, 255))
     front = page_mask(560, 760, 190, r=60)
-    img.paste(Image.new("RGBA", front.size, (248, 250, 252, 255)), (150, 160), front)
-    d.polygon([(520, 160), (710, 350), (520, 350)], fill=(203, 213, 225, 255))
-    d.rounded_rectangle((150, 160, 709, 919), radius=60, outline=(71, 85, 105, 255), width=34)
+    img.paste(Image.new("RGBA", front.size, (252, 200, 60, 255)), (150, 160), front)
+    d.polygon([(520, 160), (710, 350), (520, 350)], fill=(255, 238, 170, 255))
+    d.rounded_rectangle((150, 160, 709, 919), radius=60, outline=(29, 78, 216, 255), width=34)
     arrow(img, shadow=False)
     return img.resize((size * k, size * k), Image.LANCZOS).resize((size, size), Image.LANCZOS)
 

@@ -30,10 +30,6 @@ impl Node {
     }
 }
 
-pub const IMAGE_QUALITIES: [u8; 4] = [100, 75, 50, 25];
-pub const IMAGE_SIZES: [u8; 3] = [75, 50, 25];
-pub const VIDEO_HEIGHTS: [u32; 3] = [1080, 720, 480];
-
 /// What is selected in Explorer, grouped by category.
 #[derive(Default, Debug)]
 pub struct Selection {
@@ -111,26 +107,7 @@ fn category_items(cat: Category, exts: &BTreeSet<String>) -> Vec<Node> {
 
     let mut more = Vec::new();
     for f in cat.targets() {
-        let mut opts = Vec::new();
-        if f.lossy {
-            for q in IMAGE_QUALITIES {
-                opts.push(Node::item(format!("Quality {q}%"), Action::Convert(Preset { quality: Some(q), ..preset(f, cat) })));
-            }
-        }
-        if cat == Category::Image && f.resizable {
-            if !opts.is_empty() {
-                opts.push(Node::Separator);
-            }
-            for s in IMAGE_SIZES {
-                opts.push(Node::item(format!("Size {s}%"), Action::Convert(Preset { scale: Some(s), ..preset(f, cat) })));
-            }
-        }
-        if cat == Category::Video {
-            opts.push(Node::Separator);
-            for h in VIDEO_HEIGHTS {
-                opts.push(Node::item(format!("Resize to {h}p"), Action::Convert(Preset { height: Some(h), ..preset(f, cat) })));
-            }
-        }
+        let opts = crate::presets::more_options(f, cat);
         if !opts.is_empty() {
             more.push(Node::sub(f.label, opts));
         }

@@ -4,6 +4,7 @@
 
 pub mod formats;
 pub mod menu;
+pub mod presets;
 pub mod request;
 pub mod settings;
 
