@@ -57,6 +57,7 @@ cd ffmpeg
     --cc="$CC" --cxx="$CXX" --ar="$AR" --ranlib="$RANLIB" --nm="$NM" \
     --extra-version="fileflip" \
     --disable-everything --disable-doc --disable-network --disable-ffplay \
+    --disable-vulkan --disable-libshaderc --disable-libplacebo \
     --enable-protocol=file,pipe \
     --enable-demuxers --enable-parsers --enable-bsfs --enable-hwaccels \
     --enable-indev=lavfi \
