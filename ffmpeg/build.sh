@@ -4,7 +4,7 @@
 # Runs inside BtbN's prebuilt cross-compile image, which already contains every
 # codec library (x264, SVT-AV1, dav1d, LAME, Opus, Vorbis, libwebp, GPU SDKs…):
 #   docker run --rm -v "$PWD/ffbuild:/ffbuild" -v "$PWD/ffmpeg:/fileflip" \
-#       ghcr.io/btbn/ffmpeg-builds/win64-gpl-shared-8.1:latest bash /fileflip/build.sh
+#       ghcr.io/ffmpeg-builds/ffmpeg-builds/win64-gpl-shared-8.1:latest bash /fileflip/build.sh
 # Output: /ffbuild/out (ffmpeg.exe, ffprobe.exe, DLLs, LICENSE.txt)
 #
 # Everything is disabled, then only what FileFlip uses is enabled. See
