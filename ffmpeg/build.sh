@@ -27,6 +27,8 @@ DECODERS=(
   wmav1 wmav2 wmapro wmalossless ape wavpack tta amrnb amrwb gsm cook 'pcm_*' 'adpcm_*' 'dsd_*'
   # subtitles (text ones are converted between containers)
   subrip srt ass ssa webvtt mov_text
+  # frames from built-in generators (GPU encoder detection uses one)
+  wrapped_avframe
 )
 
 ENCODERS=(
