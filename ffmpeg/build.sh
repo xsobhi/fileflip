@@ -56,7 +56,7 @@ cd ffmpeg
     --extra-ldflags="$FF_LDFLAGS" --extra-ldexeflags="$FF_LDEXEFLAGS" \
     --cc="$CC" --cxx="$CXX" --ar="$AR" --ranlib="$RANLIB" --nm="$NM" \
     --extra-version="fileflip" \
-    --disable-everything --disable-doc --disable-network --disable-ffplay --disable-postproc \
+    --disable-everything --disable-doc --disable-network --disable-ffplay \
     --enable-protocol=file,pipe \
     --enable-demuxers --enable-parsers --enable-bsfs --enable-hwaccels \
     --enable-indev=lavfi \

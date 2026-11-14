@@ -16,7 +16,10 @@ background, and shows a compact progress window.
   - When re-encoding is needed, the bitrate is matched to the source and adjusted for codec efficiency (H.264 → AV1 needs fewer bits).
   - JPEG quality is read from the file's quantization tables and reused; lossless sources become lossless WebP.
   - Audio bitrates are matched the same way; lossless sources get top-quality lossy encodes.
-- **More options ▸** nested submenus with `Quality 100 / 75 / 50 / 25 %`, image `Size 75 / 50 / 25 %` and video `1080p / 720p / 480p`.
+- **More options ▸** nested submenus with presets that fit each type:
+  - images: *Best (100) / High (85) / Medium (70) / Small file (50)* and *75% / Half / Quarter size*
+  - audio: real bitrates (*320 … 96 kbps*; Opus *256 … 64 kbps*)
+  - video: *Full / 75% / Half / Quarter bitrate* and *Resize to 1080p / 720p / 480p*
 - **Mixed selections**: select photos, videos and songs together. The menu groups them (`Images (3) ▸`, `Videos (2) ▸`, …), and **Custom…** converts each group to its own format in one go.
 - **Custom window**: format, quality, size, frame rate, encoder, audio bitrate and channels, output folder, overwrite rules.
 - **Progress window**: one bar for the current file, plus a second bar for the batch, with Pause, Background (low priority) and Cancel, and taskbar progress.
@@ -35,15 +38,16 @@ Input: png jpg webp bmp gif tiff ico tga qoi pnm avif heic jxl · mp4 mkv webm a
 
 ## Install
 
-1. Download `FileFlip-x.y.z-windows-x64.zip` from [Releases](../../releases) and extract it anywhere.
-2. Run `fileflip.exe` and click **Install**.
-   (Or run `fileflip.exe install` from a terminal.)
-3. Right-click a file → **Convert to**.
+1. Download **`FileFlip-Setup-x.y.z.exe`** from [Releases](../../releases) and run it. No admin rights needed.
+2. Right-click a file → **Convert to**.
 
-Videos and audio need **FFmpeg**. The first time you convert one, FileFlip offers to download it
-(the [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) essentials build, about 100 MB, stored in
-`%LOCALAPPDATA%\FileFlip\ffmpeg`). If you already have FFmpeg on your `PATH`, it's used automatically.
-Images never need FFmpeg (except AVIF/HEIC).
+Prefer no installer? Download the `.zip`, extract it anywhere, run `fileflip.exe` and click **Install**.
+
+Everything is included. FileFlip ships with its own **slim FFmpeg**, built only for conversions:
+decoders for common formats; x264, SVT-AV1, NVENC/QSV/AMF, AAC, MP3, Opus, Vorbis, FLAC, PNG, JPEG and
+WebP encoders; and the few filters FileFlip uses. Streaming, devices, players and hundreds of unused
+codecs are left out. The build script is [`ffmpeg/build.sh`](ffmpeg/build.sh), and CI compiles it from
+the official FFmpeg sources. You can still point FileFlip at your own FFmpeg in Settings.
 
 > **Windows 11:** the classic context-menu extension appears under **Show more options**
 > (or Shift + right-click), the same as for most third-party tools.
@@ -88,7 +92,10 @@ Layout:
 - `crates/core`: format tables, the menu model, the exe ↔ DLL protocol and settings (no dependencies)
 - `crates/shell`: `fileflip_shell.dll`, the Explorer `IContextMenu` extension
 - `crates/app`: `fileflip.exe`: conversion engine (`engine/`) and native Win32 windows (`ui/`)
+- `ffmpeg/build.sh`: the slim FFmpeg build; `installer/`: the Inno Setup script and end-to-end test
 
 ## License
 
-MIT, see [LICENSE](LICENSE). FFmpeg is downloaded separately and has its own license.
+FileFlip is MIT licensed, see [LICENSE](LICENSE).
+The bundled FFmpeg (in the `ffmpeg` folder) is a separate program under the GPLv3. Its license and
+source information are in that folder, and it's built by [`ffmpeg/build.sh`](ffmpeg/build.sh).
