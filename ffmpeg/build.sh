@@ -44,6 +44,7 @@ FILTERS=(
   scale fps split palettegen paletteuse aresample
   transpose hflip vflip crop setpts asetpts trim atrim
   hwdownload hwupload color
+  testsrc2 sine anullsrc
 )
 
 cd /ffbuild
